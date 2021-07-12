@@ -15,6 +15,7 @@ using BSON
 using EFDCLGT_LR_Files
 using EFDCLGT_LR_Files: AbstractSimulationTemplate
 import EFDCLGT_LR_Files: name, save, load
+using EFDCLGT_LR_Runner
 
 include("upstream.jl")
 include("initial_state.jl")

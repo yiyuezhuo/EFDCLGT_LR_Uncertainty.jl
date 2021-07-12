@@ -14,12 +14,20 @@ global_logger(debug_logger)
 
 template = SimulationTemplate(ENV["WATER_ROOT"], Day, Hour)
 
+env_name_vec = ["WATER_UPSTREAM", "WATER_META"]
+
+for env_name in env_name_vec
+    ENV[env_name] = tempname()
+    mkdir(ENV[env_name])
+    @debug "mkdir($(ENV[env_name]))"
+end
+
 @testset "EFDCLGT_LR_Uncertainty" begin
     dst_root = tempname()
     mkdir(dst_root)
 
     random_push(dst_root, 2, 1/24, 10)
-    random_initial_state(dst_root, 2, 0.1, Day(2))
+    random_initial_state(dst_root, 2, 0.1, Day(2)) # test creation
 
     @test isdir(joinpath(dst_root, "1"))
     @test isdir(joinpath(dst_root, "2"))
@@ -44,6 +52,12 @@ template = SimulationTemplate(ENV["WATER_ROOT"], Day, Hour)
         end
     end
 
-    rm(dst_root, recursive=true)
+    random_initial_state(dst_root, 2, 0.1, Day(2)) # test loading
 
+    rm(dst_root, recursive=true)
+end
+
+for env_name in env_name_vec
+    rm(ENV[env_name], recursive=true)
+    @debug "rm($(ENV[env_name]))"
 end
