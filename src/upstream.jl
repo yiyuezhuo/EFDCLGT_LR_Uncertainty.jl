@@ -56,11 +56,12 @@ function random_push_interpolation(n::Int, λ, σ)
 
     # @show length(x2) length(unique(x2)) (x2 == sort(x2)) x2[end-6:end]
 
-    function ff(y)
+    function interp(y)
         # @show length(y) length(mask)
         y = y[mask]
-        y2 = vec([y'; y'])
+        # y2 = vec([y'; y'])
+        y2 = repeat(y, inner=2)
         return LinearInterpolation(x2, y2).(1:n)
     end
-    return ff
+    return interp
 end
