@@ -1,0 +1,8 @@
+name = "EFDCLGT_LR_Uncertainty"
+uuid = "6383544f-2ca1-448d-b82b-4b3014e06bf4"
+authors = ["yiyuezhuo <yiyuezhuo@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
