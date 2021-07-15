@@ -33,18 +33,7 @@ function random_push_interpolation(n::Int, λ, σ)
     mask = [true; [x[i-1] < prevfloat(x[i]) && x[i] < n+1 for i in 2:length(x)]]
     x = x[mask]
 
-    # @assert length(unique(x)) == length(x)
-    # @assert sort(x) == x
-
     x2 = vec([x[1:end-1]' ; prevfloat.(x[2:end]')])
-
-    #=
-    if length(unique(x2)) != length(x2)
-        @show x[end-5:end] x2[end-5:end]
-    end
-    =#
-    # @assert length(unique(x2)) == length(x2)
-    # @assert sort(x2) == x2
 
     if nextfloat(x2[end]) < n+1
         x2 = [x2; [nextfloat(x2[end]), n+1]]
@@ -54,12 +43,8 @@ function random_push_interpolation(n::Int, λ, σ)
         mask[idx] = false
     end
 
-    # @show length(x2) length(unique(x2)) (x2 == sort(x2)) x2[end-6:end]
-
     function interp(y)
-        # @show length(y) length(mask)
         y = y[mask]
-        # y2 = vec([y'; y'])
         y2 = repeat(y, inner=2)
         return LinearInterpolation(x2, y2).(1:n)
     end

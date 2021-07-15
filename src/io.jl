@@ -1,16 +1,18 @@
 
 # Call EFDCLGT_LR_Files to create some files. It may be better to proceed as script, but Julia...
 
-function random_push!(qser_tad::Dict{Tuple{String, Int}, TimeArray}, wqpsc_tad::Dict{String, TimeArray}, λ, σ)
+function random_push!(qser_tad::Dict{Tuple{String, Int}, DateDataFrame}, wqpsc_tad::Dict{String, DateDataFrame}, λ, σ)
     ts = timestamp(first(values(qser_tad)))
     interp = random_push_interpolation(length(ts), λ, σ)
     for (key, ta) in qser_tad
-        mat = values(ta)
-        mat .= interp(values(ta))
+        for na in names(ta)
+            ta[!, na] .= interp(ta[!, na].df)
+        end
     end
     for (key, ta) in wqpsc_tad
-        mat = values(ta)
-        mat .= mapslices(interp, mat, dims=1)
+        for na in names(ta)
+            ta[!, na] .= interp(ta[!, na].df)
+        end
     end
     return qser_tad, wqpsc_tad
 end
@@ -61,7 +63,9 @@ name(::Type{<:PositiveDataFrameDisturber}) = "pdfd.bson"
 _get_path(T::Type{<:PositiveDataFrameDisturber}) = joinpath(ENV["WATER_META"], name(T))
 
 function load(T::Type{PositiveDataFrameDisturber})
-    load(_get_path(T), T)
+    p = _get_path(T)
+    @info "Load PositiveDataFrameDisturber from $p"
+    load(p, T)
 end
 
 function save(d::T) where T <: PositiveDataFrameDisturber
@@ -78,15 +82,20 @@ function random_initial_state(dst_root::String = ENV["WATER_UPSTREAM"],
                             coef=0.1,
                             day_limit=Day(typemax(Int)),
                             template::AbstractSimulationTemplate = SimulationTemplate(ENV["WATER_ROOT"], Day, Hour),
-                            base_wqini_inp=load(template, wqini_inp))
-    if exists(PositiveDataFrameDisturber)
+                            base_wqini_inp=load(template, wqini_inp);
+                            force_estimate=false)
+    if exists(PositiveDataFrameDisturber) && !force_estimate
         pdfd = load(PositiveDataFrameDisturber)
     else
-        @info "Can't find cache for PositiveDataFrameDisturber, creating..."
+        if force_estimate
+            @info "force_estimate=$force_estimate, creating..."
+        else
+            @info "Can't find cache for PositiveDataFrameDisturber, creating..."
+        end
         dist, name_vec = fit(LowRankMatNormal, template, day_limit)
         pdfd = PositiveDataFrameDisturber(dist, coef, name_vec)
         save(pdfd)
-        @info "write $(_get_path(PositiveDataFrameDisturber))"
+        @info "Write $(_get_path(PositiveDataFrameDisturber))"
     end
 
     probe_wqini_inp = deepcopy(base_wqini_inp)
