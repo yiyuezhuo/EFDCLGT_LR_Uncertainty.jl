@@ -2,7 +2,7 @@
 
 The main goal of this package is to provide two proxy models for two models which have been developed but not be given to me for some reasons:
 
-* The upstream model: the distribution / samples of inflow (qser.inp) and concentration (wqpsc.inp) boundary conditions, which in principle should be derived by propagate input uncertainty (the distribution of weather forecasting and others) and parameter distribution of the upstream model. Since I will not waste my time reverse-engineering the dynamic, a simple "random push-pull mapping" is used to add some uncertainty to input while keeping its dynamic up to a constant.
+* The upstream model: the distribution / samples of inflow (qser.inp) and concentration (wqpsc.inp) boundary conditions, which in principle should be derived by propagate input uncertainty (the distribution of weather forecasting and others) and parameter distribution of the upstream model (for example [MonteCarloMeasurements.jl](https://github.com/baggepinnen/MonteCarloMeasurements.jl)). Since I will not waste my time reverse-engineering the dynamic, a simple "random push-pull mapping" is used to add some uncertainty to input while keeping its dynamic up to a constant.
 * The state tracking model: the distribution / samples of initial state is given by a developed Kalman Filter, but I can only see the mean but not covariance and original model. As I will not waste my time to re-develop a KF-like model, a simple noise model based on random walk is employed to add noise to initial / restarting initial concentration.
 
 ## Methods
@@ -31,7 +31,7 @@ random_push()
 # `WATER_UPSTREAM` will be overridden by string `dst_root`
 random_push(dst_root)
 
-# default arguments: n=10, λ=1/24, σ=5
+# default arguments: n=10, λ=1/24, σ=2
 random_push(dst_root, n, λ, σ)
 
 # Create "$WATER_META/pdfd.bson" and `$WATER_UPSTREAM/1/wqini.inp`, ..., `$WATER_UPSTREAM/10/wqini.inp`

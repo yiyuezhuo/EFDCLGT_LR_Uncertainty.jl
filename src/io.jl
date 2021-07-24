@@ -23,7 +23,7 @@ This function is expected to called from REPL by end user, the default argument 
 function random_push(dst_root::String = ENV["WATER_UPSTREAM"],
                     n::Int=10,
                     λ=1/24,
-                    σ=5,
+                    σ=2,
                     template::AbstractSimulationTemplate = SimulationTemplate(ENV["WATER_ROOT"], Day, Hour, [qser_inp, wqpsc_inp]),
                     base_qser_inp::qser_inp = template[qser_inp],
                     base_wqpsc_inp::wqpsc_inp = template[wqpsc_inp])
